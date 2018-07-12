@@ -1,0 +1,61 @@
+{% extends "base.html" %} {% block main %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>登录</h1>
+            <div class="alert alert-danger">密码为手机尾号后6位</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="glyphicon glyphicon-user notice"></span>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <form id="form" action="javascript:submit(this)" method="post">
+                        <div v-if="msg" class="form-group">
+                            <div class="alert alert-danger">{% raw %}{{msg}}{% endraw %} </div>
+                        </div>
+                        <div class="form-group">
+                            <label>学号</label>
+                            <input type="number" v-model="uid" class="form-control" placeholder="2017180???">
+                        </div>
+                        <div class="form-group">
+                            <label>姓名</label>
+                            <input type="text" v-model="name" class="form-control" placeholder="用真实姓名才能通过">
+                        </div>
+                        <div class="form-group">
+                            <label>密码</label>
+                            <input type="password" v-model="password" class="form-control" placeholder="密码为手机尾号后6位">
+                        </div>
+                        <button @click="login" type="button" class="btn btn-primary">Sign In</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var vm = new Vue({
+            el: '#form',
+            data: { msg:'', name: 'ahui', uid: '', password: '' },
+            data: { msg:'', name: '张', uid: '2017180499', password: '1762828' },
+            methods: {
+                login: function (e) {
+                    axios.defaults.withCredentials = true;//让ajax携带cookie
+                    axios.post('/signin', this.$data).then(function (response) {
+                        //vm.answer = _.capitalize(response.data.answer)
+                        window.location.href = '/';
+                    }).catch(function (e) {
+                        vm.msg = e.response.data.msg
+                    })
+                }
+            }
+        })
+
+    </script>
+</div>
+{% endblock %}

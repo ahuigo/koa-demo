@@ -1,0 +1,129 @@
+{% extends "base.html" %} {% block main %}
+<script src="https://cdn.bootcss.com/spark-md5/3.0.0/spark-md5.min.js"></script>
+<script src="/static/js/upload.js"></script>
+<script>
+    $(function () {
+        var vm = new Vue({
+            el: '#form',
+            data: {
+                subjects: [
+                    '作业',
+                ],
+                subject: '作业',
+                filelist: [],
+                msg: '',
+            },
+            methods: {
+
+            }
+        });
+    });
+
+        function upload(){
+            console.log('submit')
+            var fd = new FormData($('#form')[0])
+            //e.preventDefault()
+            axios.defaults.withCredentials = true;//让ajax携带cookie
+            axios.post('/upload?arg=ahui', fd).then(function (response) {
+                //vm.answer = _.capitalize(response.data.answer)
+            }).catch(function (e) {
+                vm.msg = e.response.data.msg
+            });
+            return false;
+        }
+        function b(e){
+            console.log('bbbbbbbb',e)
+        }
+</script>
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="glyphicon glyphicon-th-list"></span>已提交的作业</h3>
+                </div>
+                <div class="panel-body">
+                    <div style="height:400px; overflow-x:hidden; overflow-y:scroll;">
+                        <div id="message-list">
+                            <div style="margin-bottom:25px;" v-for="msg in messages">
+                                <div class="media-left">
+                                    <img class="media-object" style="width:48px; height:48px;" v-bind:src="'/static/images/1.png'">
+                                </div>
+                                <div class="media-body">
+                                    <h4 class="media-heading" v-text="msg.user.name"></h4>
+                                    <span v-text="msg.data"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <form id="form" onsubmit="return upload(this)" enctype="multipart/form-data" method="POST">
+                            {%raw%}
+                            <div class="form-group alert alert-danger" v-if="msg">
+                                {{msg}}
+                            </div>
+                            <div class="form-group">
+                                <label>科目</label>
+                                <select name="subject" v-model="subject">
+                                    <option disabled value="">请选择</option>
+                                    <option v-for="subject in subjects" :value="subject">
+                                        {{subject}}
+                                    </option>
+                                </select>
+                            </div>
+                            {%endraw%}
+                            <div class="form-group">
+                                <input type="file" name="myfile">
+                            </div>
+                            <button class="btn btn-primary">提交</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="glyphicon glyphicon-headphones"></span>听好喽！衬衫的价格是九磅十五便士</h3>
+                </div>
+                <div class="panel-body">
+                    <div style="height:434px; overflow-x:hidden; overflow-y:scroll;">
+                        <div id="user-list">
+                            <div class="media">
+                                <div class="media-left">
+                                    <img class="media-object" style="width:20px; height:20px;" v-bind:src="'/static/images/1.png'">
+                                </div>
+                                <div class="media-body">
+                                    <h4 class="media-heading" v-text="'同名文件将被覆盖'"></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h1>一班公告</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">作业要求</h3>
+                </div>
+                <div class="panel-body">
+                    <p>电子、打印档都需要</p>
+                    <p>
+                        <a target="_blank" href="https://shimo.im/docs/qOEAFbP1R4AzZuAJ">见一班公告</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
