@@ -33,13 +33,13 @@ async function filemd5(file) {
 }
 
 class Upload {
-    constructor(file, name) {
+    constructor(url, file, name) {
         this.handler = {}
         this.data = {}
         this._abort = false
-        this.upload(file, name)
+        this.upload(url, file, name)
     }
-    async upload(file, name) {
+    async upload(url, file, name) {
         var start = 0
 
         const BYTES_PER_CHUNK = 1024 * 1024; // 1M
@@ -49,13 +49,13 @@ class Upload {
         var data;
         do {
             try {
-                var data = await this.uploadFileSlice('/upload', file, start, name, BYTES_PER_CHUNK);
+                var data = await this.uploadFileSlice(url, file, start, name, BYTES_PER_CHUNK);
                 start += BYTES_PER_CHUNK;
                 if (this.onprogress) {
                     this.onprogress(data, start)
                 }
             } catch (data) {
-                console.log(data)
+                console.log('slice upload failed', data)
                 if (this.onfail) {
                     this.onfail(data)
                 }
@@ -98,7 +98,7 @@ class Upload {
             var res;
             var xhr = new XMLHttpRequest();
             var blobFile = file.slice(start, start + BYTES_PER_CHUNK);
-            fd.append("file", blobFile);
+            fd.append("chunk", blobFile);
             fd.append("start", start);
             fd.append("size", file.size);
             fd.append("md5", file.md5);
@@ -112,11 +112,11 @@ class Upload {
                 }
                 xhr.status === 200 ? resolve(res) : reject(res)
             }, false);
-            xhr.addEventListener("error", function () {
-            }, false);
             xhr.open("POST", url);
+            xhr.setRequestHeader('X-requested-with', 'XMLHttpRequest');
             xhr.setRequestHeader("Accept", "application/json");
             xhr.send(fd);
         });
     }
 }
+const {aa} = {aa:'abcdef'}
